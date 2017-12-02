@@ -8,7 +8,7 @@ pass_bg_color = termstyle.bg_default
 fail_fg_color = termstyle.red
 fail_bg_color = termstyle.bg_default
 
-watch_paths = ['days/', 'tests/', './scent.py']
+watch_paths = ['solutions/', 'tests/', './scent.py']
 
 
 @file_validator
