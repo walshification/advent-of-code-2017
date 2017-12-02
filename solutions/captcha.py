@@ -1,17 +1,31 @@
-def solve(sequence):
-    return sum(_digits_with_a_following_pair(sequence))
+def solve(sequence, pair_step='next'):
+    return sum(_digits_with_a_following_pair(sequence, pair_step))
 
 
-def _digits_with_a_following_pair(sequence):
+def _digits_with_a_following_pair(sequence, pair_step):
     sequence_str = str(sequence)
-    return [digit_with_pair(i, sequence_str) for i in range(len(sequence_str))]
+    return [
+        _digit_with_pair(i, sequence_str, pair_step)
+        for i in range(len(sequence_str))
+    ]
 
 
-def digit_with_pair(i, sequence_str):
-    next_i = i + 1 if i + 1 != len(sequence_str) else 0
+def _digit_with_pair(i, sequence_str, pair_step):
+    next_i = _determine_next(i, sequence_str, pair_step)
     if sequence_str[i] == sequence_str[next_i]:
         return int(sequence_str[i])
     return 0
+
+
+def _determine_next(i, sequence_str, pair_step):
+    return {
+        'half': _half_step_index(i, sequence_str),
+        'next': (i + 1 if i + 1 != len(sequence_str) else 0),
+    }[pair_step]
+
+
+def _half_step_index(i, sequence_str):
+    return int((i + (len(sequence_str) / 2)) % len(sequence_str))
 
 
 if __name__ == '__main__':
@@ -45,4 +59,5 @@ if __name__ == '__main__':
 1222891161175788713733444497592853221743138324235934216658323717267715
 3187445376894591131885498967375816378795525688295483657383145938512211
 13932919767844137362623398623853789938824592""".replace("\n", ""))
-    print(solve(problem_input))
+    print('Part One: ', solve(problem_input))
+    print('Part Two: ', solve(problem_input, pair_step='half'))
