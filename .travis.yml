@@ -1,0 +1,19 @@
+language: python
+sudo: false
+
+branches:
+  only:
+    - master
+
+addons:
+  code_climate:
+    repo_token: e099e1a99c7c0d98c74a60860729f4c66e3e997ca71221e6681f4219772ede7d
+
+install:
+  - make env
+
+script:
+  - make ci-test
+
+after_success:
+- ./env/bin/codeclimate-test-reporter
