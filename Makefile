@@ -10,9 +10,6 @@ test: | env
 test-watch: | dev-env
 	$(VENV)/bin/sniffer
 
-ci-test:
-	$(VENV)/bin/python -m unittest discover ./tests
-
 shell: | dev-env
 	$(VENV)/bin/ipython
 

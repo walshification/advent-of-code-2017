@@ -12,10 +12,11 @@ addons:
     repo_token: e099e1a99c7c0d98c74a60860729f4c66e3e997ca71221e6681f4219772ede7d
 
 install:
-  - make env
+  - pip install -r requirements/base.txt
 
 script:
-  - make ci-test
+  - coverage run --rcfile=coverage.cfg -m unittest discover ./tests
+  - coverage report --rcfile=coverage.cfg
 
 after_success:
-- ./env/bin/codeclimate-test-reporter
+- codeclimate-test-reporter
