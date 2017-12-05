@@ -11,16 +11,25 @@ class MazeJumper:
     def location(self):
         return self._index
 
-    def jump(self):
+    def jump(self, jump_type=''):
         jump_amount = self.instructions[self._index]
-        self.instructions[self._index] += 1
+        self._change_instruction(jump_type)
         self._index += jump_amount
         self.total_jump_count += 1
 
-    def jump_out(self):
+    def jump_out(self, jump_type=''):
         while self._index < len(self.instructions):
-            self.jump()
+            self.jump(jump_type=jump_type)
         return self.total_jump_count
+
+    def _change_instruction(self, jump_type):
+        if jump_type == 'wacky' and self._is_big_jump(self.instructions[self._index]):
+            self.instructions[self._index] -= 1
+        else:
+            self.instructions[self._index] += 1
+
+    def _is_big_jump(self, jump_amount):
+        return jump_amount > 2
 
 
 if __name__ == '__main__':

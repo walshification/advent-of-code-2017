@@ -33,6 +33,15 @@ class JumpTests(TestSetup):
         self.jumper.jump()
         self.assertEqual(self.jumper.total_jump_count, 1)
 
+    def test_wacky_jump_decreases_instruction_by_one_if_jump_is_three_or_more(self):
+        self.jumper.jump('wacky')
+        self.jumper.jump('wacky')
+        self.assertEqual(self.jumper.instructions[1], 2)
+
+    def test_wacky_jump_still_increments_by_one_for_small_jumps(self):
+        self.jumper.jump('wacky')
+        self.assertEqual(self.jumper.instructions[0], 2)
+
 
 class JumpOutTests(TestSetup):
     def test_jump_out_runs_until_jumper_is_out_of_the_list_and_returns_jump_count(self):
