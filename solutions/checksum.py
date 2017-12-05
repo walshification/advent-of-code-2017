@@ -11,15 +11,16 @@ def max_min_difference(row):
 
 
 def even_divisor_difference(row):
-    divisors = [digit for digit in row if _divides_evenly(digit, row)]
-    return int(max(divisors) / min(divisors))
+    for i in range(len(row)):
+        divisors = _dig_for_divisors(row[i], row[i+1:])
+        if divisors:
+            return int(max(divisors) / min(divisors))
 
 
-def _divides_evenly(number, digits):
-    for digit in digits:
-        if number != digit and (number % digit == 0 or digit % number == 0):
-            return True
-    return False
+def _dig_for_divisors(number, row):
+    for digit in row:
+        if number % digit == 0 or digit % number == 0:
+            return number, digit
 
 
 if __name__ == '__main__':
