@@ -22,6 +22,10 @@ class PassphraseValidatorTests(unittest.TestCase):
     def test_has_no_anagrams_returns_false_if_passphrase_has_anagram(self):
         self.assertFalse(has_no_anagrams('abcde xyz ecdab'))
 
+    # bug regression
+    def test_has_no_anagrams_isnt_fooled_by_consecutive_letter_pairs(self):
+        self.assertTrue(has_no_anagrams('aa bb'))
+
     def test_valid_count_returns_number_of_valid_passphrases_per_validator_function(self):
         passphrases = [
             'aa bb cc',
