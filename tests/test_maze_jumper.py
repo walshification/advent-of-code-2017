@@ -47,3 +47,7 @@ class JumpOutTests(TestSetup):
     def test_jump_out_runs_until_jumper_is_out_of_the_list_and_returns_jump_count(self):
         self.jumper.jump_out()
         self.assertEqual(self.jumper.total_jump_count, 4)
+
+    def test_wacky_jump_out_runs_longer(self):
+        self.jumper.jump_out(jump_type='wacky')
+        self.assertEqual(self.jumper.total_jump_count, 9)
