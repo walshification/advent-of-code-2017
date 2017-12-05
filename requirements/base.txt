@@ -1,1 +1,4 @@
+codeclimate-test-reporter==0.2.3
+coverage==4.3.4
+pyyaml==3.12
 Sphinx==1.5.2
