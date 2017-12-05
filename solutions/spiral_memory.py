@@ -3,11 +3,21 @@ import math
 
 
 class Cell:
-    def __init__(self, cell_id, coordinates):
+    def __init__(self, cell_id, coordinates, value=0):
         self.id = cell_id
         self.coordinates = coordinates
         self.x = coordinates[0]
         self.y = coordinates[1]
+        self.value = value
+
+    def distance_from(self, other):
+        return sum([abs(self.x - other.x), abs(self.y - other.y)])
+
+    def is_adjacent(self, other):
+        return self.distance_from(other) == 1 or self.is_diagonal_from(other)
+
+    def is_diagonal_from(self, other):
+        return abs(self.x - other.x) == 1 and abs(self.y - other.y) == 1
 
 
 class SpiralWorker:
@@ -54,14 +64,28 @@ class MemoryBank:
 
     def allocate(self, number_of_cells):
         for step, position in self.worker.advance(number_of_cells):
+            current_cell = self.get_cell_by_position(position)
+            # adjacent_values = self._calculate_adjacent_values(current_cell)
             self._cells[step] = Cell(step, position)
 
     def get_coordinates(self, cell_id):
         return self._cells[cell_id].coordinates
 
-    def distance_from_origin(self, cell_id):
-        cell = self._cells[cell_id]
-        return sum([abs(cell.x), abs(cell.y)])
+    def distance_from_points(self, cell_id_a, cell_id_b=1):
+        cell_a = self._cells[cell_id_a]
+        cell_b = self._cells[cell_id_b]
+        return cell_a.distance_from(cell_b)
+
+    def get_cell_by_position(self, position):
+        for cell in self._cells.values():
+            if cell.coordinates == position:
+                return cell
+
+    def _calculate_adjacent_values(self, current_cell):
+        return [
+            cell.value for cell in self._cells.values()
+            if cell.is_adjacent(current_cell)
+        ]
 
 
 if __name__ == '__main__':
