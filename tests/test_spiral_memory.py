@@ -42,7 +42,7 @@ class CellTests(unittest.TestCase):
 
 class MemoryBankTests(unittest.TestCase):
     def setUp(self):
-        self.bank = MemoryBank()
+        self.bank = MemoryBank(disable_progress_bar=True)
 
     def test_allocates_memory_cells_in_a_spiral_pattern(self):
         self.bank.allocate(3)
@@ -64,3 +64,17 @@ class MemoryBankTests(unittest.TestCase):
         self.assertEqual(self.bank.get_cell(4).value, 4)
         self.assertEqual(self.bank.get_cell(5).value, 5)
         self.assertEqual(self.bank.get_cell(6).value, 10)
+
+    def test_value_higher_than_target_returns_cell_with_next_highest_value(self):
+        self.bank.allocate(6)
+        higher = self.bank.value_higher_than_target(9)
+        self.assertEqual(higher.value, 10)
+
+    def test_value_higher_than_target_returns_None_if_no_higher_value(self):
+        self.bank.allocate(6)
+        higher = self.bank.value_higher_than_target(11)
+        self.assertEqual(higher, None)
+
+    def test_allocate_does_not_go_beyond_desired_number_of_cells(self):
+        self.bank.allocate(10)
+        self.assertEqual(len(self.bank.cells), 10)
