@@ -55,3 +55,12 @@ class MemoryBankTests(unittest.TestCase):
         self.assertEqual(self.bank.get_coordinates(5), (-1, 1))
         self.assertEqual(self.bank.get_coordinates(7), (-1, -1))
         self.assertEqual(self.bank.get_coordinates(10), (2, -1))
+
+    def test_sets_cumulative_adjacent_values_on_new_cells(self):
+        self.bank.allocate(6)
+        self.assertEqual(self.bank.get_cell(1).value, 1)
+        self.assertEqual(self.bank.get_cell(2).value, 1)
+        self.assertEqual(self.bank.get_cell(3).value, 2)
+        self.assertEqual(self.bank.get_cell(4).value, 4)
+        self.assertEqual(self.bank.get_cell(5).value, 5)
+        self.assertEqual(self.bank.get_cell(6).value, 10)

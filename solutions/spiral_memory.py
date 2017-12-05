@@ -8,7 +8,15 @@ class Cell:
         self.coordinates = coordinates
         self.x = coordinates[0]
         self.y = coordinates[1]
-        self.value = value
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
 
     def distance_from(self, other):
         return sum([abs(self.x - other.x), abs(self.y - other.y)])
@@ -59,27 +67,20 @@ class SpiralWorker:
 
 class MemoryBank:
     def __init__(self, worker=None):
-        self._cells = {1: Cell(1, (0, 0))}  # origin
+        self._cells = {1: Cell(1, (0, 0), value=1)}  # origin
         self.worker = worker or SpiralWorker()
 
     def allocate(self, number_of_cells):
         for step, position in self.worker.advance(number_of_cells):
-            current_cell = self.get_cell_by_position(position)
-            # adjacent_values = self._calculate_adjacent_values(current_cell)
-            self._cells[step] = Cell(step, position)
+            current_cell = Cell(step, position)
+            current_cell.value = sum(self._calculate_adjacent_values(current_cell))
+            self._cells[step] = current_cell
+
+    def get_cell(self, cell_id):
+        return self._cells[cell_id]
 
     def get_coordinates(self, cell_id):
         return self._cells[cell_id].coordinates
-
-    def distance_from_points(self, cell_id_a, cell_id_b=1):
-        cell_a = self._cells[cell_id_a]
-        cell_b = self._cells[cell_id_b]
-        return cell_a.distance_from(cell_b)
-
-    def get_cell_by_position(self, position):
-        for cell in self._cells.values():
-            if cell.coordinates == position:
-                return cell
 
     def _calculate_adjacent_values(self, current_cell):
         return [
