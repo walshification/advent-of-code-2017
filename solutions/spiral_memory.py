@@ -62,3 +62,9 @@ class MemoryBank:
     def distance_from_origin(self, cell_id):
         cell = self._cells[cell_id]
         return sum([abs(cell.x), abs(cell.y)])
+
+
+if __name__ == '__main__':
+    bank = MemoryBank()
+    bank.allocate(312051)
+    print('Part One:', bank.distance_from_origin(312051))
