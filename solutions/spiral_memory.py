@@ -88,7 +88,7 @@ class MemoryBank:
             disable=self.disable_progress_bar
         ):
             current_cell = Cell(step, position)
-            # current_cell.value = sum(self._calculate_adjacent_values(current_cell))
+            current_cell.value = sum(self._calculate_adjacent_values(current_cell))
             self._cells[step] = current_cell
             self._cells_by_value[current_cell.value] = current_cell
             self._highest_value = current_cell.value
