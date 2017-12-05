@@ -1,3 +1,6 @@
+import yaml
+
+
 class MazeJumper:
     def __init__(self, instructions):
         self.instructions = instructions
@@ -18,3 +21,9 @@ class MazeJumper:
         while self._index < len(self.instructions):
             self.jump()
         return self.total_jump_count
+
+
+if __name__ == '__main__':
+    with open('solutions/problem_inputs/maze_jumper.yaml', 'r') as instructions:
+        test_input = yaml.load(instructions)
+    print('Part One:', MazeJumper(test_input).jump_out())
