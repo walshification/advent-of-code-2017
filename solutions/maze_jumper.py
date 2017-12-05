@@ -3,7 +3,7 @@ import yaml
 
 class MazeJumper:
     def __init__(self, instructions):
-        self.instructions = instructions
+        self.instructions = instructions[:]
         self._index = 0
         self.total_jump_count = 0
 
@@ -34,8 +34,7 @@ class MazeJumper:
 
 if __name__ == '__main__':
     with open('solutions/problem_inputs/maze_jumper.yaml', 'r') as instructions:
-        part_one_input = yaml.load(instructions)
+        test_input = yaml.load(instructions)
 
-    part_two_input = part_one_input[:]
-    print('Part One:', MazeJumper(part_one_input).jump_out())
-    print('Part Two:', MazeJumper(part_two_input).jump_out(jump_type='wacky'))
+    print('Part One:', MazeJumper(test_input).jump_out())
+    print('Part Two:', MazeJumper(test_input).jump_out(jump_type='wacky'))
