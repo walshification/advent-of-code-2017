@@ -54,3 +54,4 @@ class Reallocator:
 if __name__ == '__main__':
     test_input = [5, 1, 10, 0, 1, 7, 13, 14, 3, 12, 8, 10, 7, 12, 0, 6]
     print('Part One:', Reallocator(test_input).actively_reallocate())
+    print('Part Two:', Reallocator(test_input).actively_reallocate(target='loop-size'))
