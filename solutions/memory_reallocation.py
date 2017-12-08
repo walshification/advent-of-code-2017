@@ -12,10 +12,20 @@ class Reallocator:
         self._remember_state()
 
     def actively_reallocate(self, target=None):
+        loop_count = 1
         while 1:
             self.reallocate()
             if self._has_repeated_state():
-                return len(self.history)
+                if target == 'loop-size':
+                    if loop_count == 1:
+                        self.banks = self.banks[:]
+                        self.history = self.history[-1:]
+                        self.current_index = 0
+                        loop_count += 1
+                    else:
+                        return len(self.history) - 1
+                else:
+                    return len(self.history)
 
     def _has_repeated_state(self):
         return self.history[-1] in self.history[:-1]

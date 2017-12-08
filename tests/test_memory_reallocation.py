@@ -39,3 +39,6 @@ class MemoryReallocationTests(MemoryReallocationSetup):
 
     def test_integration_example(self):
         self.assertEqual(self.reallocator.actively_reallocate(), 5)
+
+    def test_target_loop_size_finds_cycle_length_between_repeated_state(self):
+        self.assertEqual(self.reallocator.actively_reallocate(target='loop-size'), 4)
