@@ -11,7 +11,7 @@ class Reallocator:
         self._redistribute(largest_bank, memory_to_distribute)
         self._remember_state()
 
-    def actively_reallocate(self):
+    def actively_reallocate(self, target=None):
         while 1:
             self.reallocate()
             if self._has_repeated_state():
@@ -39,3 +39,8 @@ class Reallocator:
 
     def _remember_state(self):
         self.history.append(self.banks[:])
+
+
+if __name__ == '__main__':
+    test_input = [5, 1, 10, 0, 1, 7, 13, 14, 3, 12, 8, 10, 7, 12, 0, 6]
+    print('Part One:', Reallocator(test_input).actively_reallocate())
