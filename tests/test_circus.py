@@ -1,29 +1,26 @@
 import unittest
 
-from solutions.circus import Pyramid
+from solutions.circus import Program, Pyramid
 
 
-class PyramidTests(unittest.TestCase):
-    def test_creates_a_dictionary_structure_out_of_input(self):
-        pyramid = Pyramid(['asdf (34)'])
-        self.assertEqual(pyramid.get('asdf')['name'], 'asdf')
-        self.assertEqual(pyramid.get('asdf')['weight'], 34)
+class ProgramTests(unittest.TestCase):
+    def test_creates_a_program_with_attributes_from_a_string(self):
+        program = Program('asdf (34)')
+        self.assertEqual(program.name, 'asdf')
+        self.assertEqual(program.weight, 34)
 
     def test_registers_programs_on_the_program_supporting_them(self):
-        pyramid = Pyramid([
-            'qwer (12)',
-            'asdf (34) -> qwer',
-        ])
-        self.assertEqual(pyramid.get('asdf')['supports'], ['qwer'])
+        program = Program('asdf (34) -> qwer')
+        self.assertEqual(program.children, ['qwer'])
 
 
 class ParentTests(unittest.TestCase):
-    def test_parent_returns_the_list_of_parent_of_a_program(self):
+    def test_init_assigns_parents_to_programs(self):
         pyramid = Pyramid([
             'qwer (12)',
             'asdf (34) -> qwer',
         ])
-        self.assertEqual(pyramid.parent('qwer')['name'], 'asdf')
+        self.assertEqual(pyramid.tower['qwer'].parent, 'asdf')
 
     def test_root_returns_the_bottom_of_the_pyramid(self):
         pyramid = Pyramid([
