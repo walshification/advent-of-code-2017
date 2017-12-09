@@ -1,4 +1,5 @@
 import re
+import yaml
 
 
 class Pyramid:
@@ -17,6 +18,7 @@ class Pyramid:
         for parent, attributes in self.tower.items():
             if child in attributes['supports']:
                 return self.tower[parent]
+        return None
 
     def _build_tower(self, programs):
         supports = None
@@ -34,6 +36,12 @@ class Pyramid:
             }
 
     def _find_root(self, node):
-        if self.parent(node['name']):
-            return self._find_root(self.parent(node['name']))
-        return node['name']
+        if not self.parent(node['name']):
+            return node['name']
+        return self._find_root(self.parent(node['name']))
+
+
+if __name__ == '__main__':
+    with open('solutions/problem_inputs/circus.yaml', 'r') as programs:
+        test_input = yaml.load(programs)
+    print('Part One:', Pyramid(test_input).root)
