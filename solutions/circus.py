@@ -6,108 +6,97 @@ import yaml
 
 class Program:
     def __init__(self, program):
-        supports = None
+        children = []
         if '->' in program:
             program, supports = program.split(' -> ')
-            supports = supports.split(', ')
+            children.extend(supports.split(', '))
         name = re.search('\w+|$', program).group()
         weight = re.search('\d+|$', program).group()
 
         self.name = name
         self.weight = int(weight)
-        self.children = supports or []
+        self.children = children
         self.parent = None
+
+
+class Tower:
+    def __init__(self, root, descendants):
+        self.root = root
+        self.descendants = descendants
+        self.line = [root] + descendants
+        self.supported_weight = sum(program.weight for program in descendants)
+        self._branches = None
+        self._branch_weights = None
+
+    @classmethod
+    def build(cls, root, programs):
+        descendants = [program for program in programs if program.name in root.children]
+        return cls(root, descendants)
+
+    @property
+    def branches(self):
+        if self._branches is None:
+            children = [
+                descendant for descendant in self.descendants
+                for child_name in self.root.children
+                if descendant.name == child_name
+            ]
+            self._branches = [Tower.build(child, self.descendants) for child in children]
+        return self._branches
+
+    @property
+    def is_balanced(self):
+        if self._branch_weights is None:
+            self._branch_weights = {branch.supported_weight for branch in self.branches}
+        return len(self._branch_weights) == 1
 
 
 class Pyramid:
     def __init__(self, programs):
-        self.tower = self._build_tower(programs)
-
-    @classmethod
-    def find_unbalanced_program(cls, pyramid, root):
-        child_lineages = cls.__map_children_to_lineages(pyramid, root)
-        lineage_weights = cls.__map_children_to_total_weights(child_lineages)
-        weight_names = cls.__map_weights_to_names(lineage_weights)
-
-        if pyramid.is_unbalanced(weight_names):
-            off_balance_program = cls.__find_off_balance_program(weight_names.values())
-            return cls.find_unbalanced_program(pyramid, pyramid.tower[off_balance_program])
-        else:
-            return root.name
-
-    @classmethod
-    def __map_children_to_lineages(cls, pyramid, root):
-        return {
-            child: [pyramid.tower[child]] + pyramid.descendants(child)
-            for child in root.children
-        }
-
-    @classmethod
-    def __map_children_to_total_weights(cls, child_lineages):
-        return {
-            child: sum(child.weight for child in lineage)
-            for child, lineage in child_lineages.items()
-        }
-
-    @classmethod
-    def __map_weights_to_names(cls, lineage_weights):
-        weight_names = {}
-        for name, weight in lineage_weights.items():
-            if weight_names.get(weight):
-                weight_names[weight].append(name)
-            else:
-                weight_names[weight] = [name]
-        return weight_names
-
-    @classmethod
-    def __find_off_balance_program(cls, names):
-        for name_list in names:
-            if len(name_list) == 1:
-                return name_list[0]
+        self.tree = self._build_tree(programs)
 
     @property
     def root(self):
-        any_key = next(iter(self.tower))
-        return self._find_root(self.tower[any_key])
+        any_key = next(iter(self.tree))
+        return self._find_root(self.tree[any_key])
 
     def descendants(self, program):
-        if not self.tower[program].children:
+        if not self.tree[program].children:
             return []
 
         children = [
-            [self.tower[child]] + self.descendants(child)
-            for child in self.tower[program].children
+            [self.tree[child]] + self.descendants(child)
+            for child in self.tree[program].children
         ]
         return list(chain.from_iterable(children))  # flatten the lists
 
-    def is_unbalanced(self, weight_names):
-        return len(weight_names) > 1
-
-    def _build_tower(self, programs):
-        tower = self._construct_programs(programs)
-        return self._assign_parents(tower)
+    def _build_tree(self, programs):
+        tree = self._construct_programs(programs)
+        return self._assign_parents(tree)
 
     def _construct_programs(self, programs):
-        tower = {}
+        tree = {}
         for program in programs:
             program = Program(program)
-            tower[program.name] = program
-        return tower
+            tree[program.name] = program
+        return tree
 
-    def _assign_parents(self, tower):
-        for program in tower.keys():
-            for other in tower.values():
+    def _assign_parents(self, tree):
+        for program in tree.keys():
+            for other in tree.values():
                 if program in other.children:
-                    tower[program].parent = other.name
-        return tower
+                    tree[program].parent = other.name
+        return tree
 
     def _find_root(self, program):
         if not program.parent:
             return program
-        return self._find_root(self.tower[program.parent])
+        return self._find_root(self.tree[program.parent])
 
 
 if __name__ == '__main__':
     with open('solutions/problem_inputs/circus.yaml', 'r') as programs:
         test_input = yaml.load(programs)
-    print('Part One:', Pyramid(test_input).root)
+    pyramid = Pyramid(test_input)
+    print('Part One:', pyramid.root.name)
+    print('Part Two:', Pyramid.find_unbalanced_program(pyramid, pyramid.root))
