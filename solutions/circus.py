@@ -18,80 +18,100 @@ class Program:
         self.children = children
         self.parent = None
 
-
-class Tower:
-    def __init__(self, root, descendants):
-        self.root = root
-        self.descendants = descendants
-        self.line = [root] + descendants
-        self.supported_weight = sum(program.weight for program in descendants)
-        self._branches = None
-        self._branch_weights = None
-
-    @classmethod
-    def build(cls, root, programs):
-        descendants = [program for program in programs if program.name in root.children]
-        return cls(root, descendants)
-
-    @property
-    def branches(self):
-        if self._branches is None:
-            children = [
-                descendant for descendant in self.descendants
-                for child_name in self.root.children
-                if descendant.name == child_name
-            ]
-            self._branches = [Tower.build(child, self.descendants) for child in children]
-        return self._branches
-
-    @property
-    def is_balanced(self):
-        if self._branch_weights is None:
-            self._branch_weights = {branch.supported_weight for branch in self.branches}
-        return len(self._branch_weights) == 1
+    def __repr__(self):
+        return "<Program: name={} weight={} children={} parent={}>".format(
+            self.name,
+            self.weight,
+            self.children,
+            self.parent,
+        )
 
 
 class Pyramid:
     def __init__(self, programs):
-        self.tree = self._build_tree(programs)
+        self.programs = {program.name: program for program in programs}
+        self._root = None
+        self._tree = None
+
+    @classmethod
+    def build(cls, schemas):
+        programs = [Program(schema) for schema in schemas]
+        for program in programs:
+            for other in programs:
+                if program.name in other.children:
+                    program.parent = other.name
+        return cls(programs)
 
     @property
     def root(self):
-        any_key = next(iter(self.tree))
-        return self._find_root(self.tree[any_key])
+        if self._root is None:
+            self._root = self._dig_up_root(self.programs[next(iter(self.programs))])
+        return self._root
 
-    def descendants(self, program):
-        if not self.tree[program].children:
+    @property
+    def tree(self):
+        if self._tree is None:
+            self._tree = {}
+            for name, program in self.programs.items():
+                self._tree[name] = {
+                    'weight': program.weight,
+                    'children': program.children,
+                    'supported_weight': self._supported_weight([program])
+                }
+        return self._tree
+
+    @property
+    def unbalanced_program(self):
+        return self._find_unbalanced_program(self.root)
+
+    def is_balanced(self, program_name):
+        program = self.tree[program_name]
+        if not program['children']:
+            return True
+        descendants = set()
+        for child in program['children']:
+            descendants.add(
+                sum(self.tree[child]['weight'] for child in self._get_descendants([self.programs[child]])
+                )
+            )
+        # supported_weights = set(
+        #     self.tree[child]['weight'] for child in descendants
+        # )
+        return len(descendants) < 2
+
+    def _dig_up_root(self, arbitrary_program):
+        if not arbitrary_program.parent:
+            return arbitrary_program
+        return self._dig_up_root(self.programs[arbitrary_program.parent])
+
+    def _supported_weight(self, programs):
+        descendants = self._get_descendants(programs)
+        if programs:
+            print('descendants for {}'.format(programs[0].name), descendants)
+        return sum(descendant.weight for descendant in descendants)
+
+    def _get_descendants(self, programs):
+        if not programs:
             return []
-
         children = [
-            [self.tree[child]] + self.descendants(child)
-            for child in self.tree[program].children
+            self.programs[child]
+            for program in programs
+            for child in program.children
         ]
-        return list(chain.from_iterable(children))  # flatten the lists
+        return children + self._get_descendants(children)
 
-    def _build_tree(self, programs):
-        tree = self._construct_programs(programs)
-        return self._assign_parents(tree)
-
-    def _construct_programs(self, programs):
-        tree = {}
-        for program in programs:
-            program = Program(program)
-            tree[program.name] = program
-        return tree
-
-    def _assign_parents(self, tree):
-        for program in tree.keys():
-            for other in tree.values():
-                if program in other.children:
-                    tree[program].parent = other.name
-        return tree
-
-    def _find_root(self, program):
-        if not program.parent:
-            return program
-        return self._find_root(self.tree[program.parent])
+    def _find_unbalanced_program(self, root):
+        unbalanced = [
+            program for program in root.children if not self.is_balanced(program)
+        ]
+        if unbalanced:
+            unbalanced_branches = [
+                child for child in root.children if not self.is_balanced(child)
+            ]
+            if unbalanced_branches:
+                return self._find_unbalanced_program(self.programs[unbalanced[0]])
+            return unbalanced[0]
+        return root.name
 
 
 if __name__ == '__main__':
