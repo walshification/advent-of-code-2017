@@ -1,5 +1,5 @@
 import re
-from itertools import chain
+from collections import defaultdict
 
 import yaml
 
@@ -17,21 +17,18 @@ class Program:
         self.weight = int(weight)
         self.children = children
         self.parent = None
-
-    def __repr__(self):
-        return "<Program: name={} weight={} children={} parent={}>".format(
-            self.name,
-            self.weight,
-            self.children,
-            self.parent,
-        )
+        self.total_weight = int(weight)
 
 
 class Pyramid:
     def __init__(self, programs):
         self.programs = {program.name: program for program in programs}
+        for name, program in self.programs.items():
+            program.total_weight += sum(
+                self.programs[child].weight for child in program.children
+            )
         self._root = None
-        self._tree = None
+        self._unbalanced_program = None
 
     @classmethod
     def build(cls, schemas):
@@ -49,35 +46,29 @@ class Pyramid:
         return self._root
 
     @property
-    def tree(self):
-        if self._tree is None:
-            self._tree = {}
-            for name, program in self.programs.items():
-                self._tree[name] = {
-                    'weight': program.weight,
-                    'children': program.children,
-                    'supported_weight': self._supported_weight([program])
-                }
-        return self._tree
+    def unbalanced_program(self):
+        if self._unbalanced_program is None:
+            self._unbalanced_program = self._find_unbalanced_program(self.root)
+        return self._unbalanced_program
 
     @property
-    def unbalanced_program(self):
-        return self._find_unbalanced_program(self.root)
+    def weight_to_balance(self):
+        sibling = [
+            self.programs[child]
+            for child in self.programs[self.unbalanced_program.parent].children
+            if child != self.unbalanced_program.name
+        ][0]
+        difference = sibling.total_weight - self.unbalanced_program.total_weight
+        return self.unbalanced_program.weight + difference
 
     def is_balanced(self, program_name):
-        program = self.tree[program_name]
-        if not program['children']:
+        program = self.programs[program_name]
+        if not program.children:
             return True
-        descendants = set()
-        for child in program['children']:
-            descendants.add(
-                sum(self.tree[child]['weight'] for child in self._get_descendants([self.programs[child]])
-                )
-            )
-        # supported_weights = set(
-        #     self.tree[child]['weight'] for child in descendants
-        # )
-        return len(descendants) < 2
+        children_weights = set(
+            self.programs[child].total_weight for child in program.children
+        )
+        return len(children_weights) < 2
 
     def _dig_up_root(self, arbitrary_program):
         if not arbitrary_program.parent:
@@ -86,8 +77,6 @@ class Pyramid:
 
     def _supported_weight(self, programs):
         descendants = self._get_descendants(programs)
-        if programs:
-            print('descendants for {}'.format(programs[0].name), descendants)
         return sum(descendant.weight for descendant in descendants)
 
     def _get_descendants(self, programs):
@@ -102,21 +91,31 @@ class Pyramid:
 
     def _find_unbalanced_program(self, root):
         unbalanced = [
-            program for program in root.children if not self.is_balanced(program)
+            program.name for program in [root] if not self.is_balanced(program.name)
         ]
         if unbalanced:
-            unbalanced_branches = [
-                child for child in root.children if not self.is_balanced(child)
+            child_to_weights_mapping = {
+                child: self.programs[child].total_weight
+                for child in self.programs[unbalanced[0]].children
+            }
+            weight_count = defaultdict(int)
+            for weight in child_to_weights_mapping.values():
+                weight_count[weight] += 1
+            oddball = [
+                child
+                for child, weight in child_to_weights_mapping.items()
+                if weight_count[weight] == 1 and self.programs[child].children
             ]
-            if unbalanced_branches:
-                return self._find_unbalanced_program(self.programs[unbalanced[0]])
-            return unbalanced[0]
-        return root.name
+            if oddball:
+                return self._find_unbalanced_program(self.programs[oddball[0]])
+            else:
+                return root
+        return root
 
 
 if __name__ == '__main__':
     with open('solutions/problem_inputs/circus.yaml', 'r') as programs:
-        test_input = yaml.load(programs)
-    pyramid = Pyramid(test_input)
+        test_input = yaml.safe_load(programs)
+    pyramid = Pyramid.build(test_input)
     print('Part One:', pyramid.root.name)
-    print('Part Two:', Pyramid.find_unbalanced_program(pyramid, pyramid.root))
+    print('Part Two:', pyramid.weight_to_balance, '1072')
