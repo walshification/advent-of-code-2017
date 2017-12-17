@@ -45,4 +45,7 @@ class Registry:
 if __name__ == '__main__':
     with open('solutions/problem_inputs/registry.yaml', 'r') as instructions:
         test_input = yaml.safe_load(instructions)
-    print('Part One:', Registry(test_input).largest_value)
+
+    registry = Registry(test_input)
+    print('Part One:', registry.largest_value)
+    print('Part Two:', registry.largest_value_ever)
