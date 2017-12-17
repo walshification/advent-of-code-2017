@@ -8,6 +8,7 @@ class Registry:
             'inc': '+',
             'dec': '-',
         }
+        self.largest_value_ever = 0
         self.prepare_registry(instructions)
 
     @property
@@ -37,6 +38,8 @@ class Registry:
                     value
                 )
             )
+        if self.registers[register] > self.largest_value_ever:
+            self.largest_value_ever = self.registers[register]
 
 
 if __name__ == '__main__':

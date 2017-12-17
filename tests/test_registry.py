@@ -41,3 +41,13 @@ class RegisterTests(unittest.TestCase):
         ]
         registry = Registry(instructions)
         self.assertEqual(registry.largest_value, 1)
+
+    def test_keeps_track_of_highest_value_ever(self):
+        instructions = [
+            'b inc 5 if a > 1',
+            'a inc 1 if b < 5',
+            'c dec -10 if a >= 1',
+            'c inc -20 if c == 10',
+        ]
+        registry = Registry(instructions)
+        self.assertEqual(registry.largest_value_ever, 10)
