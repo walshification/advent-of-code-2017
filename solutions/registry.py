@@ -1,3 +1,6 @@
+import yaml
+
+
 class Registry:
     def __init__(self, instructions=None):
         self.registers = {}
@@ -34,3 +37,9 @@ class Registry:
                     value
                 )
             )
+
+
+if __name__ == '__main__':
+    with open('solutions/problem_inputs/registry.yaml', 'r') as instructions:
+        test_input = yaml.safe_load(instructions)
+    print('Part One:', Registry(test_input).largest_value)
