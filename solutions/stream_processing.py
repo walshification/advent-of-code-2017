@@ -1,8 +1,19 @@
 def valuate(stream):
-    # clean garbage
+    cleaned_stream = clean(stream)
     # remove garbage
-    # assess the groups
-    return assess(stream)
+    return assess(cleaned_stream)
+
+
+def clean(stream):
+    cleaned_stream = []
+    i = 0
+    while i < len(stream):
+        if stream[i] == '!':
+            i += 1
+        else:
+            cleaned_stream.append(stream[i])
+        i += 1
+    return ''.join(cleaned_stream)
 
 
 def assess(stream, generation=1):
