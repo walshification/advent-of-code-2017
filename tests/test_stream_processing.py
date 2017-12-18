@@ -1,6 +1,6 @@
 import unittest
 
-from solutions.stream_processing import assess, clean, remove_garbage
+from solutions.stream_processing import assess, clean, remove_garbage, valuate
 
 
 class CleanTests(unittest.TestCase):
@@ -40,3 +40,13 @@ class AssessTests(unittest.TestCase):
 
     def test_assesses_multigenerational_streams(self):
         self.assertEqual(assess('{{{},{},{{}}}}'), 16)
+
+
+class ValuateTests(unittest.TestCase):
+    def test_survives_some_feature_level_tests(self):
+        self.assertEqual(valuate('{{{}}}'), 6)
+        self.assertEqual(valuate('{{},{}}'), 5)
+        self.assertEqual(valuate('{<a>,<a>,<a>,<a>}'), 1)
+        self.assertEqual(valuate('{{<ab>},{<ab>},{<ab>},{<ab>}}'), 9)
+        self.assertEqual(valuate('{{<!!>},{<!!>},{<!!>},{<!!>}}'), 9)
+        self.assertEqual(valuate('{{<a!>},{<a!>},{<a!>},{<ab>}}'), 3)

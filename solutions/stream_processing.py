@@ -26,7 +26,19 @@ def remove_garbage(stream):
         else:
             cleaned_stream.append(stream[i])
         i += 1
-    return ''.join(cleaned_stream)
+
+    further_cleaned_stream = []
+    i = 0
+    cleaned_stream = ''.join(cleaned_stream)
+    while i < len(cleaned_stream):
+        if cleaned_stream[i] == '{':
+            further_cleaned_stream.append(cleaned_stream[i])
+            while cleaned_stream[i+1:i+2] not in ['', '}', '{']:
+                i += 1
+        else:
+            further_cleaned_stream.append(cleaned_stream[i])
+        i += 1
+    return ''.join(further_cleaned_stream)
 
 
 def assess(stream, generation=1):
