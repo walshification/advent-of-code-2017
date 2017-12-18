@@ -7,6 +7,11 @@ def valuate(stream):
     return assess(pure_stream)
 
 
+def count_garbage(stream):
+    cleaned_stream = clean(stream)
+    return garbage_count(cleaned_stream)
+
+
 def clean(stream):
     cleaned_stream = []
     i = 0
@@ -56,10 +61,21 @@ def assess(stream, generation=1):
         i += 1
     return total
 
-if __name__ == '__main__':
-    import sys
-    sys.setrecursionlimit(10000)
 
+def garbage_count(stream):
+    garbage = 0
+    i = 0
+    while i < len(stream):
+        if stream[i] == '<':
+            i += 1
+            while stream[i] != '>':
+                garbage += 1
+                i += 1
+        i += 1
+    return garbage
+
+if __name__ == '__main__':
     with open('solutions/problem_inputs/stream_processing.yaml') as stream:
         test_input = yaml.safe_load(stream)
     print('Part One:', valuate(test_input))
+    print('Part Two:', count_garbage(test_input))
