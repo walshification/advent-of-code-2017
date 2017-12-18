@@ -33,13 +33,13 @@ class AssessTests(unittest.TestCase):
         self.assertEqual(assess('{{}}'), 3)
 
     def test_asseses_sibling_groups_at_same_generation_rate(self):
-        self.assertEqual(assess('{},{}'), 2)
+        self.assertEqual(assess('{}{}'), 2)
 
     def test_iterates_over_nested_sibling_groups(self):
-        self.assertEqual(assess('{{},{}}'), 5)
+        self.assertEqual(assess('{{}{}}'), 5)
 
     def test_assesses_multigenerational_streams(self):
-        self.assertEqual(assess('{{{},{},{{}}}}'), 16)
+        self.assertEqual(assess('{{{}{}{{}}}}'), 16)
 
 
 class ValuateTests(unittest.TestCase):

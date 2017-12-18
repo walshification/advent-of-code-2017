@@ -1,3 +1,6 @@
+import yaml
+
+
 def valuate(stream):
     cleaned_stream = clean(stream)
     pure_stream = remove_garbage(cleaned_stream)
@@ -31,7 +34,7 @@ def remove_garbage(stream):
     i = 0
     cleaned_stream = ''.join(cleaned_stream)
     while i < len(cleaned_stream):
-        if cleaned_stream[i] == '{':
+        if cleaned_stream[i] in ['{', '}']:
             further_cleaned_stream.append(cleaned_stream[i])
             while cleaned_stream[i+1:i+2] not in ['', '}', '{']:
                 i += 1
@@ -42,10 +45,21 @@ def remove_garbage(stream):
 
 
 def assess(stream, generation=1):
-    if stream == '{}':
-        return generation
-    if stream[:2] == '{{':
-        return generation + assess(stream[1:-1], generation+1)
-    return sum(
-        assess(group, generation) for group in stream.split(',')
-    )
+    total = 0
+    i = 0
+    while i < len(stream):
+        if stream[i+1:i+2] == '{':
+            generation += 1
+        if stream[i+1:i+2] == '}':
+            total += generation
+            generation -= 1
+        i += 1
+    return total
+
+if __name__ == '__main__':
+    import sys
+    sys.setrecursionlimit(10000)
+
+    with open('solutions/problem_inputs/stream_processing.yaml') as stream:
+        test_input = yaml.safe_load(stream)
+    print('Part One:', valuate(test_input))
