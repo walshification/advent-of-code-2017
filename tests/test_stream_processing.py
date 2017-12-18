@@ -1,6 +1,6 @@
 import unittest
 
-from solutions.stream_processing import assess, clean
+from solutions.stream_processing import assess, clean, remove_garbage
 
 
 class CleanTests(unittest.TestCase):
@@ -9,6 +9,20 @@ class CleanTests(unittest.TestCase):
 
     def test_removes_does_not_double_remove_double_bangs(self):
         self.assertEqual(clean('{!!}'), '{}')
+
+
+class RemovegarbageTests(unittest.TestCase):
+    def test_removes_empty_garbage_from_stream(self):
+        self.assertEqual(remove_garbage('{<>}'), '{}')
+
+    def test_removes_garbage_that_has_all_kinds_of_characters_in_it(self):
+        self.assertEqual(remove_garbage('{<asdfawefawefawe>}'), '{}')
+
+    def test_removes_garbage_that_had_curly_brackets_in_it(self):
+        self.assertEqual(remove_garbage('{<{}{}{}}{}{}{{{{}}}>}'), '{}')
+
+    def test_removes_garbage_that_is_next_to_other_garbage(self):
+        self.assertEqual(remove_garbage('{<><>}'), '{}')
 
 
 class AssessTests(unittest.TestCase):
