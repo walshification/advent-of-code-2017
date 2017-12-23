@@ -75,7 +75,7 @@ def garbage_count(stream):
     return garbage
 
 if __name__ == '__main__':
-    with open('solutions/problem_inputs/stream_processing.yaml') as stream:
+    with open('problem_inputs/stream_processing.yaml') as stream:
         test_input = yaml.safe_load(stream)
     print('Part One:', valuate(test_input))
     print('Part Two:', count_garbage(test_input))

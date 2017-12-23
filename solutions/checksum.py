@@ -24,7 +24,7 @@ def _dig_for_divisors(number, row):
 
 
 if __name__ == '__main__':
-    with open('solutions/problem_inputs/checksum.yaml', 'r') as spreadsheet:
+    with open('problem_inputs/checksum.yaml', 'r') as spreadsheet:
         test_input = yaml.load(spreadsheet)
     print('Part One: ', calculate(test_input, max_min_difference))
     print('Part Two: ', calculate(test_input, even_divisor_difference))

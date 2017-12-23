@@ -24,7 +24,7 @@ def is_anagram(word, other):
 
 
 if __name__ == '__main__':
-    with open('solutions/problem_inputs/passphrase_validator.yaml', 'r') as passwords:
+    with open('problem_inputs/passphrase_validator.yaml', 'r') as passwords:
         test_input = yaml.load(passwords)
     print('Part One:', valid_count(test_input, is_unique))
     print('Part Two:', valid_count(test_input, has_no_anagrams))

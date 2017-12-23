@@ -33,7 +33,7 @@ class MazeJumper:
 
 
 if __name__ == '__main__':
-    with open('solutions/problem_inputs/maze_jumper.yaml', 'r') as instructions:
+    with open('problem_inputs/maze_jumper.yaml', 'r') as instructions:
         test_input = yaml.load(instructions)
 
     print('Part One:', MazeJumper(test_input).jump_out())

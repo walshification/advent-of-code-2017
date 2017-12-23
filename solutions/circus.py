@@ -114,7 +114,7 @@ class Pyramid:
 
 
 if __name__ == '__main__':
-    with open('solutions/problem_inputs/circus.yaml', 'r') as programs:
+    with open('problem_inputs/circus.yaml', 'r') as programs:
         test_input = yaml.safe_load(programs)
     pyramid = Pyramid.build(test_input)
     print('Part One:', pyramid.root.name)
