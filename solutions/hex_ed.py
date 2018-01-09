@@ -31,32 +31,15 @@ class Walker:
         return self
 
     def move(self, direction):
-        if direction == 'n':
-            self.__change_coordinates(0, 1, -1)
-        if direction == 'nw':
-            self.__change_coordinates(-1, 1, 0)
-        if direction == 'sw':
-            self.__change_coordinates(-1, 0, 1)
-        if direction == 's':
-            self.__change_coordinates(0, -1, 1)
-        if direction == 'se':
-            self.__change_coordinates(1, -1, 0)
-        if direction == 'ne':
-            self.__change_coordinates(1, 0, -1)
-
-    def __on_the_axis(self):
-        return 0 in [self.x, self.y, self.z]
-
-    def __follow_the_axis(self):
-        absolute_x = abs(self.x)
-        absolute_y = abs(self.y)
-        absolute_z = abs(self.z)
-        if absolute_x > 0:
-            return absolute_x
-        if absolute_y > 0:
-            return absolute_y
-        if absolute_z > 0:
-            return absolute_z
+        direction_to_coordinate_delta_map = {
+            'n': (0, 1, -1),
+            'nw': (-1, 1, 0),
+            'sw': (-1, 0, 1),
+            's': (0, -1, 1),
+            'se': (1, -1, 0),
+            'ne': (1, 0, -1),
+        }
+        self.__change_coordinates(*direction_to_coordinate_delta_map[direction])
 
     def __change_coordinates(self, dx, dy, dz):
         self.x += dx
