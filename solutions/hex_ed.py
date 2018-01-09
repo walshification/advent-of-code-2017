@@ -67,4 +67,7 @@ class Walker:
 if __name__ == '__main__':
     with open('problem_inputs/hex_ed.yaml', 'r') as moves:
         test_input = yaml.safe_load(moves)
-    print('Part One:', Walker().advance(test_input).distance_from_origin)
+    walker = Walker()
+    walker.advance(test_input)
+    print('Part One:', walker.distance_from_origin)
+    print('Part Two:', walker.furthest_distance)
