@@ -38,22 +38,28 @@ class WalkerTests(unittest.TestCase):
         walker.move('ne')
         self.assertEqual(walker.coordinates, (1, 0, -1))
 
-    def test_advances_with_a_list_of_moves(self):
+    def test_advances_with_a_list_of_moves_in_string_form(self):
         walker = Walker()
-        walker.advance(['s', 's'])
+        walker.advance('s,s')
         self.assertEqual(walker.coordinates, (0, -2, 2))
 
     def test_knows_how_far_from_the_origin_it_is(self):
         walker = Walker()
-        walker.advance(['s', 's'])
+        walker.advance('s,s')
         self.assertEqual(walker.distance_from_origin, 2)
 
     def test_knows_how_far_on_a_diagonal(self):
         walker = Walker()
-        walker.advance(['se', 'se'])
+        walker.advance('se,se')
         self.assertEqual(walker.distance_from_origin, 2)
 
     def test_knows_how_far_when_its_all_jagged(self):
         walker = Walker()
-        walker.advance(['nw', 'sw', 'sw'])
+        walker.advance('nw,sw,sw')
         self.assertEqual(walker.distance_from_origin, 3)
+
+    def test_remembers_the_furthest_it_ever_is_from_the_origin(self):
+        walker = Walker()
+        walker.advance('nw,sw,sw,ne')
+        self.assertEqual(walker.distance_from_origin, 2)
+        self.assertEqual(walker.furthest_distance, 3)

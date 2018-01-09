@@ -1,8 +1,12 @@
+import yaml
+
+
 class Walker:
     def __init__(self):
         self.x = 0
         self.y = 0
         self.z = 0
+        self.furthest_distance = 0
 
     @property
     def coordinates(self):
@@ -20,7 +24,10 @@ class Walker:
         return distance
 
     def advance(self, moves):
-        [self.move(move) for move in moves]
+        for move in moves.split(','):
+            self.move(move)
+            if self.distance_from_origin > self.furthest_distance:
+                self.furthest_distance = self.distance_from_origin
         return self
 
     def move(self, direction):
@@ -55,3 +62,9 @@ class Walker:
         self.x += dx
         self.y += dy
         self.z += dz
+
+
+if __name__ == '__main__':
+    with open('problem_inputs/hex_ed.yaml', 'r') as moves:
+        test_input = yaml.safe_load(moves)
+    print('Part One:', Walker().advance(test_input).distance_from_origin)
